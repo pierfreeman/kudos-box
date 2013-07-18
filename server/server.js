@@ -1,18 +1,54 @@
 Meteor.startup(function () {
-    if (Kudos.find().count() === 0) {
-    
-      var toList = ["Piercarlo Serena",
-      				"Raffaele Cigni",
-      				"Alessandro Palumbo"];
-      var fromList = ["Raffaele Cigni",
-      				  "Alessandro Palumbo",
-      				  "Piercarlo Serena"];
-      var reasonList = ["Perché ha fatto un buon lavoro con il Kudos Box.",
-      					"Perché è competente con Meteor.",
-      					"Perché il sito di Leroy Merlin è venuto proprio bene."];
-      
-      for (var i = 0; i < toList.length; i++)
-        Kudos.insert({to: toList[i], from: fromList[i], reason: reasonList[i]});
-        
+
+    var user = function ( _id, name) {
+        return findOrCreate(new User({_id: _id, profile: {name: name} }));
     }
-  });
+
+    var theBoss = user('_the_boss', 'The Boss');
+    var theObiettore = user('_the_obiettore', 'The Obiettore');
+
+    if (Kudos.find().count() === 0) {
+
+        var kudos = [
+            {
+                fromId: theBoss._id,
+                toId: theObiettore._id,
+                reason: "Mi piace un sacco sto roba"
+            },
+            {
+                fromId: theObiettore._id,
+                toId: theBoss._id,
+                reason: "Ma quanto mi piace!"
+            }
+        ];
+
+        for (var i = 0; i < kudos.length; i++) {
+            new Kudo( kudos[i]).save();
+        }
+
+    }
+});
+
+Accounts.onCreateUser(function(options, user) {
+    // We still want the default hook's 'profile' behavior.
+    if (options.profile)
+        user.profile = options.profile;
+
+    return user;
+});
+
+function getDomain(email) {
+    return email.replace(/.*@/, "");
+}
+
+function findOrCreate(test) {
+
+    var user = Users.findOne({_id: test._id});
+
+    if(!user) {
+        user = Users.insert(test);
+    }
+
+    return user;
+}
+
