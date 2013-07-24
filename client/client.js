@@ -1,7 +1,7 @@
 
 
 Template.kudo_form.rendered = function() {
-    return $('input#to').typeahead({
+    return $('input[name=to]').typeahead({
         source: function(query, process) {
 
             var users = Users.find({
@@ -22,30 +22,42 @@ Template.kudo_form.from = function () {
 };
 
 Template.kudo_form.events({
-    'click button' : function () {
+    'click button' : function (event, tmpl) {
+
+        event.preventDefault();
+
         // template data, if any, is available in 'this'
-        var to = $('#to').val();
-        var reason = $('#reason').val();
+        var inputTo = tmpl.find('[name=to]');
+        var inputReason = tmpl.find('[name=reason]');
+
+//        console.log(inputTo);
+//        console.log(inputReason);
+
+        var to = inputTo.value;
+        var reason = inputReason.value;
 
         if ( to != '' && reason != '' ) {
 
+            var currentUser = Meteor.user();
+
             var theOne = Users.findOne({'profile.name': to});
+
             if (theOne == null) {
                 alert("I can't find this guy!");
                 return false;
             }
 
-            if (theOne._id == Meteor._id) {
+            if (theOne._id === currentUser._id) {
                 alert("Make love with somebody else, please!");
                 return false;
             }
 
-            $('#to').val('');
-            $('#reason').val('');
+            inputTo.value = '';
+            inputReason.value = '';
 
             var kudo = new Kudo({
                 toId: theOne._id,
-                fromId: Meteor.user()._id,
+                fromId: currentUser._id,
                 reason: reason
             });
 
@@ -96,4 +108,4 @@ var safeName = function(user) {
     } else {
         return 'MISSING';
     }
-}
+};
