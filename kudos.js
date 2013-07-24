@@ -5,12 +5,10 @@ Kudo = function (doc) {
 //_.extend(Kudo.prototype, {});
 
 Kudo.prototype = {
-
     constructor: Kudo,
-
     save: function () {
         Kudos.insert(this);
-    },
+    }
 };
 
 // Define a Collection that uses Kudo as its document
