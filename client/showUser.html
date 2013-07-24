@@ -1,0 +1,53 @@
+<template name="showUser">
+
+    <div class="row">
+        <div class="span-2">
+            <img class="img-polaroid" width="60" src='{{user.profile.picture}}'/>
+        </div>
+        <div class="span-10">
+            <h2>{{user.profile.name}}</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span-2">
+            Kudos: {{user.profile.received}} / {{user.profile.sent}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span-12">
+            {{> givenKudos}}
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="span-12">
+            {{> receivedKudos}}
+        </div>
+    </div>
+
+</template>
+
+<template name="receivedKudos">
+
+    <h4>Received, {{tot}} some:</h4>
+
+    {{#each kudos}}
+        {{> kudo}}
+    {{else}}
+        None.
+    {{/each}}
+</template>
+
+<template name="givenKudos">
+
+    <h4>Given, {{tot}} some:</h4>
+
+    {{#each kudos}}
+        {{> kudo}}
+    {{else}}
+        None.
+    {{/each}}
+</template>

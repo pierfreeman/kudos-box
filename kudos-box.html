@@ -7,72 +7,17 @@
 {{> navbar}}
 
 <div class="container">
-    {{> hello}}
-    {{> kudo_form}}
-    {{> kudo_list}}
+    {{> login}}
+    {{renderPage}}
 </div>
 </body>
 
-<template name="navbar">
-
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container">
-                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="brand" href="#">Kudos Box</a>
-                <div class="nav-collapse collapse">
-                    <ul class="nav">
-                        <li class="active"><a href="#">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a class='drop' href="#">Drop kudos :(</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </div><!--/.nav-collapse -->
-            </div>
-        </div>
-    </div>
-
+<template name="not_found">
+    <h1>Ouch! Page not Found</h1>
 </template>
 
-<template name="hello">
-    <h1>Kudos Box!</h1>
-    <div style="float:right">
-        {{loginButtons align="right"}}
-    </div>
-    <div>
-        Received: {{received}}
-        Sent: {{sent}}
-    </div>
-</template>
-
-<template name="kudo_form">
-    <form id="kudo_form" class="form-inline">
-        <fieldset>
-            <legend>Insert Kudo {{profile.name}}</legend>
-            <input type="text" class="input-medium" placeholder="Who?" name="to" autocomplete="off">
-            <input type="text" class="input-xlarge" placeholder="Why?" name="reason" autocomplete="off">
-            <button class="btn btn-primary"> <span class="icon-gift icon-white"/> Submit</button>
-        </fieldset>
-    </form>
-</template>
-
-<template name="kudo_list">
-    {{#each kudos}}
-    {{> kudo}}
-    {{/each}}
-</template>
-
-<template name="kudo">
-    <div class="kudo" objId="{{_id}}">
-        <span class="from">{{from}}</span> <i>wants to give some love to</i>
-        <span class="to">{{to}}</span> <i>because</i>
-        <span class="reason">{{reason}}</span>
-        <i>
-            <span class="prettyTime" time="{{when}}">{{prettyWhen}}</span>
-        </i>
+<template name="login">
+    <div class='row'>
+        <div class='span-3 offset9'>{{loginButtons align="right"}}</div>
     </div>
 </template>

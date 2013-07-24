@@ -8,5 +8,5 @@ bootstrap
 email
 accounts-google
 accounts-ui
-autopublish
 insecure
+less
