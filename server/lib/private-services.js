@@ -25,7 +25,6 @@ emitKudo = function(fromUser, toUser, reason) {
 
 setupUserProfileByService = function (profile, user) {
 
-
     if (user.services) {
         if (user.services.google) {
             var google = user.services.google;
@@ -37,6 +36,6 @@ setupUserProfileByService = function (profile, user) {
 }
 
 likeKudo = function (userId, kudoId) {
-    //var kudo = Kudos.findOne(kudoId);
+
     Kudos.update({_id:kudoId}, { $addToSet: { likes: userId } });
 };

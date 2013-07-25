@@ -35,18 +35,24 @@ Meteor.methods({
 
     newUserByEmail: function(email) {
 
+        var username = email.split('@')[0];
+
         var profile = {
-            name: email,
+            name: username,
             email: email,
             domain: getDomain(email),
             sent: 0,
             received: 0
         };
 
-        var user = new User({profile:profile});
+        var user = new User({
+            profile:profile,
+            info: {referralUserId: Meteor.userId},
+            createdAt: new Date().time
+        });
 
         Users.insert(user);
-//        Accounts.onCreateUser({
+//        Accounts.createUser({
 //            email: email,
 //            profile: profile
 //        });
