@@ -13,18 +13,23 @@ Meteor.methods({
 
             setupUserProfileByService(profile, user);
 
+            var actual = {};
             // here we can access all the kudos
-            profile.sent = Kudos.find({
-                domain: user.domain,
+            actual.newSent = Kudos.find({
+                domain: profile.domain,
                 fromId: user._id
                 }).count();
 
-            profile.received = Kudos.find({
-                domain: user.domain,
+            actual.newReceived = Kudos.find({
+                domain: profile.domain,
                 toId: user._id
             }).count();
 
-            console.log('Welcome, Mr. {name}. S = {sent}, R = {received}'.assign( profile ));
+            console.log('UPDATE BALANCE {name} @ {domain}. S = {newSent} ({sent}), R = {newReceived} ({received})'.assign( profile, actual ));
+
+            profile.sent = actual.newSent;
+            profile.received = actual.newReceived;
+
             Users.update({'_id': user._id}, user);
         });
     },
@@ -35,7 +40,8 @@ Meteor.methods({
 
     newUserByEmail: function(email) {
 
-        var username = email.split('@')[0];
+        //var username = email.split('@')[0];
+        var username = email;
 
         var profile = {
             name: username,
@@ -46,18 +52,17 @@ Meteor.methods({
         };
 
         var user = new User({
-            profile:profile,
-            info: {referralUserId: Meteor.userId},
-            createdAt: new Date().time
+            profile: profile,
+            createdAt: new Date().getTime()
         });
+        user.info = {};
+        user.info.referralUserId = Meteor.userId();
 
-        Users.insert(user);
-//        Accounts.createUser({
-//            email: email,
-//            profile: profile
-//        });
-        // we should send him an email to join us.
-        // Accounts.sendEnrollmentEmail
+        var userId = Users.insert(user);
+
+        this.unblock();
+
+        sendInvitationEmail(userId);
 
         return user;
     },
