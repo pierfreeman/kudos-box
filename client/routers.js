@@ -6,12 +6,23 @@ Meteor.Router.beforeRouting = function() {
 Meteor.Router.add({
 
     '/': 'timeline',
-
-    'timeline': 'timeline',
+    '/timeline': 'timeline',
 
     '/home': 'home',
 
+    '/about': 'about',
+
+    '/share/:id' : function(id) {
+
+        console.log('we are at ' + this.canonicalPath);
+        console.log("our parameters: " + this.params);
+
+        Session.set('share._id', id);
+        return 'share';
+    },
+
     '/users/:screenName': function(screenName) {
+
         console.log('we are at ' + this.canonicalPath);
         console.log("our parameters: " + this.params);
 
@@ -25,24 +36,27 @@ Meteor.Router.add({
         }
     },
 
-    '/balance': 'balance',
-
     '/admin': 'admin',
     
     '*': 'not_found'
 });
 
 Meteor.Router.filters({
+
     'checkLoggedIn': function(page) {
         if (Meteor.loggingIn()) {
             return 'loading';
         } else if (Meteor.user()) {
-            return page;
+            if (!Meteor.loggingIn()) {
+                return page;
+            } else {
+                return 'loading';
+            }
         } else {
             return 'home';
         }
     },
-            
+
     'checkAdmin' : function(page) {
         if (Meteor.userId() && Meteor.user().profile.admin) {
             return page;
@@ -52,6 +66,6 @@ Meteor.Router.filters({
     }    
 });
 
-Meteor.Router.filter('checkLoggedIn', {except: 'home'});
+Meteor.Router.filter('checkLoggedIn', {except: ['home', 'share']});
 
-Meteor.Router.filter('checkAdmin', {only: 'admin'});
+Meteor.Router.filter('checkAdmin', {only: ['admin']});

@@ -1,5 +1,12 @@
 /* CSS declarations go here */
 body {
 	 padding-top: 60px;
-	 background-color:lightyellow;
+}
+
+a {
+    cursor: pointer;
+}
+
+.prettyTime {
+    font-size: small; font-style: italic;
 }

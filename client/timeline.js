@@ -1,3 +1,5 @@
+var PAGE_SIZE = 10;
+
 Template.kudo_form.rendered = function() {
     return $('input[name=to]').typeahead({
         source: function(query, process) {
@@ -15,11 +17,50 @@ Template.kudo_form.rendered = function() {
     });
 };
 
-Template.kudo_form.from = function () {
-    return Meteor.userId();
+Template.kudo_list.created = function() {
+
+    Session.set("current_page", 1);
+
+    $(window).scroll(function() {
+        if (($(window).innerHeight() + $(window).scrollTop()) >= $("body").height())   {
+            var currentpage = Session.get('current_page');
+            Session.set('current_page', currentpage + 1);
+        }
+    });
+
+    Session.setDefault('kudo.showComments', {});
+};
+
+Template.kudo_new_comment.events({
+
+    'click button' : function (event, tmpl) {
+
+        event.preventDefault();
+
+        var message = tmpl.find('[name=message]');
+
+        if (message.value == '') {
+            return false;
+        }
+
+        Meteor.call("emitComment", this, message.value, function (error, result) {
+            console.log("emitComment: " + result);
+        });
+
+        message.value = '';
+        return false;
+    }
+});
+
+Template.kudo_list.kudos = function () {
+    return Kudos.find({}, {
+        limit: Session.get("current_page")*PAGE_SIZE,
+        sort: {when: -1}
+    });
 };
 
 Template.kudo_form.events({
+
     'click button' : function (event, tmpl) {
 
         event.preventDefault();
@@ -27,17 +68,12 @@ Template.kudo_form.events({
         // template data, if any, is available in 'this'
         var inputTo = tmpl.find('[name=to]');
         var inputReason = tmpl.find('[name=reason]');
-
-//        console.log(inputTo);
-//        console.log(inputReason);
-
         var to = inputTo.value;
         var reason = inputReason.value;
 
         if ( to != '' && reason != '' ) {
 
             var currentUser = Meteor.user();
-
             var targetUser = Users.findOne({'profile.name': to});
 
             if (targetUser == null) {
@@ -58,7 +94,7 @@ Template.kudo_form.events({
             inputTo.value = '';
             inputReason.value = '';
 
-            Meteor.call("emitKudo", targetUser, reason, function(error, result){
+            Meteor.call("emitKudo", targetUser, reason, function(error, result) {
                 console.log('emitKudo ');
                 console.log(result);
             });
@@ -66,56 +102,88 @@ Template.kudo_form.events({
         } else {
             alert('Are u making fun of me?');
         }
-
         return false;
     }
 });
 
-Template.kudo_list.kudos = function () {
-    return Kudos.find({}, {sort: {when: -1}});
-};
+Template.kudo.events({
+
+    'click a.like-it': function(event, templ) {
+        if (_.contains(this.likes, Meteor.userId())) {
+            console.log('Like');
+            Meteor.call('unlikeKudo', this._id);
+        } else {
+            console.log('unLike');
+            Meteor.call('likeKudo', this._id);
+        }
+    },
+
+    'click a.comment-it': function(event, tmpl) {
+
+        event.preventDefault();
+
+        var showComments = Session.get('kudo.showComments');
+        if (_.has(showComments, this._id)) {
+            Session.set('kudo.showComments', _.omit(showComments, this._id))
+        } else {
+            showComments[this._id] = true;
+            Session.set('kudo.showComments', showComments);
+        }
+    },
+
+    'click a.public-link': function(event, tmpl) {
+
+        event.preventDefault();
+        window.open('http://' + document.location.host + '/share/' + this._id);
+    }
+});
 
 Template.kudo.helpers({
 
     prettyWhen: function () {
         return moment(this.when).fromNow();
-    }
-    ,from: function() {
+    },
+    from: function() {
         return safeName(Users.findOne(this.fromId));
-
-    }
-    ,to: function() {
+    },
+    to: function() {
         return safeName(Users.findOne(this.toId));
     },
+    fromPicture: function() {
+        var user = Users.findOne(this.fromId);
+        if (user) {
+            return user.profile.picture;
+        }
+        return false;
+    },
+    isLiked: function() {
+        if (_.contains(this.likes, Meteor.userId())) {
+            return "Liked";
+        } else {
+            return "Like";
+        }
+    },
     totalLikes: function() {
-        // the IFerno!
-        if (this.likes) {
-            if (this.likes.any(Meteor.userId)) {
-                var youAndOthers = 'you';
-                if (this.likes.length > 1) {
-                    youAndOthers = youAndOthers + '+' + (this.likes.length-1);
-                }
-                return youAndOthers
-            } else {
-                return this.likes.length;
-            }
+        if(this.likes) {
+            return this.likes.length;
         } else {
             return 0;
         }
+    },
+    showComments: function()  {
+        return Session.get('kudo.showComments')[this._id];
     }
 });
 
-Template.kudo.events({
-    'click a.like-it': function(event, templ) {
-        Meteor.call('likeKudo', this._id);
+Template.kudo_comment.helpers({
+
+    prettyWhen: function () {
+        return moment(this.when).fromNow();
+    },
+    author: function() {
+        return safeName(Users.findOne(this.author));
+    },
+    authorPicture: function() {
+        return Users.findOne(this.author).profile.picture;
     }
 });
-
-
-var safeName = function(user) {
-    if (user) {
-        return user.screenName();
-    } else {
-        return 'MISSING';
-    }
-};

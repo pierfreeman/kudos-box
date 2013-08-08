@@ -15,8 +15,6 @@ User.prototype = {
            
 };
 
-
-
 // Define a Collection that uses User as its document
 Meteor.users._transform = function( doc ){ return new User(doc);};
 

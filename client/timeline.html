@@ -3,11 +3,10 @@
     {{> kudo_list}}
 </template>
 
-
 <template name="kudo_form">
     <form id="kudo_form" class="form-inline">
         <fieldset>
-            <legend>Insert Kudo {{profile.name}}</legend>
+            <legend>Insert Kudo</legend>
             <input type="text" class="input-medium" placeholder="Who?" name="to" autocomplete="off">
             <input type="text" class="input-xlarge" placeholder="Why?" name="reason" autocomplete="off">
             <button class="btn btn-primary"> <span class="icon-gift icon-white"/> Submit</button>
@@ -22,17 +21,79 @@
 </template>
 
 <template name="kudo">
-    <div class="kudo" objId="{{_id}}">
-        <span class="from">
-            <a href="/users/{{from}}">{{from}}</a>
-        </span> <i>wants to give some love to</i>
-        <span class="to">
-            <a href="/users/{{to}}">{{to}}</a>
-        </span> <i>because</i>
-        <span class="reason">{{reason}}</span>
-        <i>
-            <span class="prettyTime" time="{{when}}">{{prettyWhen}}</span>
-        </i>
-        <a class='like-it'> <i class="icon-thumbs-up"/> {{totalLikes}} </a>
+    <div class="kudo row" objId="{{_id}}">
+        <div class="span1">
+            <img class="img-rounded" alt="{{from}}" src="{{fromPicture}}"/>
+        </div>
+        <div class="span8 well well-small">
+            <div class="row">
+                <div class="span8">
+                    <a class="text-center" href="/users/{{from}}"><strong>{{from}}</strong></a>
+                    <i class="icon-chevron-right"/>
+                    <a class="strong" href="/users/{{to}}"><strong>{{to}}</strong></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="span8">
+                    <p class="reason">{{reason}}</p>
+                    <p class="prettyTime pull-right" time="{{when}}">{{prettyWhen}}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="span4">
+                    <ul class="inline">
+                        <li><a class='like-it'><i class="icon-thumbs-up"/> {{isLiked}}</a></li>
+                        <li><a class='comment-it'><i class="icon-comment"/> Comment</a></li>
+                        <li><a class="public-link"><i class="icon-globe"/> Public link</a></li>
+                    </ul>
+                </div>
+                <div class="span4">
+                    <p class="pull-right">
+                        <i><small>{{totalLikes}} likes, {{#if commentsCount}} {{commentsCount}} {{else}} 0 {{/if}} comments.</small></i>
+                    </p>
+                </div>
+            </div>
+            {{#if showComments}}
+            {{#if comments}}
+            <div class="comments row">
+                <div class="span7">
+                    {{#each comments}}
+                    {{> kudo_comment}}
+                    {{/each}}
+                </div>
+            </div>
+            {{/if}}
+            {{> kudo_new_comment}}
+            {{/if}}
+        </div>
+    </div>
+</template>
+
+<template name="kudo_comment">
+    <div class="row" objId="{{_id}}">
+        <div class="span1">
+            <img width="40" height="40" class="img-rounded pull-right" alt="{{author}}" src="{{authorPicture}}"/>
+        </div>
+        <div class="span5">
+            <div class="row">
+                <div class="span5">
+                    <a class="text-center" href="/users/{{author}}"><strong>{{author}}</strong></a> {{message}}
+                    <p class="prettyTime" time="{{when}}">{{prettyWhen}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name="kudo_new_comment">
+    <div class="new_comment row">
+        <div class="span6 offset1">
+            <form class="form-inline form_new_comment">
+                <div class="input-append">
+                    <input type="text" class="span4" placeholder="New comment" name="message" autocomplete="off">
+                    <button class="btn btn-success"><span class="icon-comment"/></button>
+                </div>
+            </form>
+        </div>
     </div>
 </template>

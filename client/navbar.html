@@ -9,19 +9,21 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="brand" href="/home">Kudos Box</a>
-                <div class="nav-collapse collapse">
-                    <ul class="nav">
-                        <li class="active">
-                            <a href="/">Timeline {{currentUser.profile.domain}}</a>
-                        </li>
-                        <li><a href="#contact">Contact</a></li>
-                        {{#if admin}}
-                            <li><a href="/admin">Admin</a></li>
-                        {{/if}}
-                    </ul>
-                </div><!--/.nav-collapse -->
+                {{> navbarMenu}}
             </div>
         </div>
     </div>
 
+</template>
+
+<template name="navbarMenu">
+    <div class="nav-collapse collapse">
+        <ul class="nav">
+            {{#each items}}
+            <li class="{{clazz}}">
+                <a href="{{href}}">{{caption}}</a>
+            </li>
+            {{/each}}
+        </ul>
+    </div>
 </template>

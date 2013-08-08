@@ -1,53 +1,100 @@
 <template name="showUser">
 
     <div class="row">
-        <div class="span-2">
-            <img class="img-polaroid" width="60" src='{{user.profile.picture}}'/>
+        <div class="span2">
+            <img class="img-rounded" src='{{user.profile.picture}}'/>
         </div>
-        <div class="span-10">
-            <h2>{{user.profile.name}}</h2>
+        <div class="span10">
+            <fieldset>
+                <legend>{{user.profile.name}}</legend>
+                <ul class="inline">
+                    <li><i class="icon-envelope"/> Email: {{user.profile.email}}</li>
+                    <li><i class="icon-map-marker"/> Domain: {{user.profile.domain}}</li>
+                    <li>
+                        {{#if user.enabled}}
+                        <i class="icon-eye-open"/> Status: enabled
+                        {{else}}
+                        <i class="icon-eye-close"/> Status: disabled <i>(you cannot send or receive kudos)</i>
+                        {{/if}}
+                    </li>
+                </ul>
+                <ul class="inline">
+                    <li>
+                        <table class="table table-condensed table-bordered">
+                            <thead><tr><th><i class="icon-heart"/> Sent</th></tr></thead>
+                            <tbody><tr><td><h4 class="text-center">{{user.balance.sent}}</h4></td></tr></tbody>
+                        </table>
+                    </li>
+                    <li>
+                        <table class="table table-condensed table-bordered">
+                            <thead><tr><th><i class="icon-gift"/> Received</th></tr></thead>
+                            <tbody><tr><td><h4 class="text-center">{{user.balance.received}}</h4></td></tr></tbody>
+                        </table>
+                    </li>
+                    <li>
+                        <table class="table table-condensed table-bordered">
+                            <thead><tr><th><i class="icon-ok"/> Spendable</th></tr></thead>
+                            <tbody><tr><td><h4 class="text-center">{{user.balance.spendable}}</h4></td></tr></tbody>
+                        </table>
+                    </li>
+                    <li>
+                        <table class="table table-condensed table-bordered">
+                            <thead><tr><th><i class="icon-shopping-cart"/> Currency</th></tr></thead>
+                            <tbody><tr><td><h4 class="text-center">{{user.balance.currency}}</h4></td></tr></tbody>
+                        </table>
+                    </li>
+                </ul>
+            </fieldset>
         </div>
     </div>
-
+    <br/>
     <div class="row">
-        <div class="span-2">
-            Kudos: {{user.profile.received}} / {{user.profile.sent}}
+        <div class="span12">
+            <fieldset>
+                <legend>Given kudos</legend>
+                {{> kudo_short_given_list}}
+            </fieldset>
         </div>
     </div>
-
     <div class="row">
-        <div class="span-12">
-            {{> givenKudos}}
+        <div class="span12">
+            <fieldset>
+                <legend>Received kudos</legend>
+                {{> kudo_short_received_list}}
+            </fieldset>
         </div>
     </div>
-
-
-    <div class="row">
-        <div class="span-12">
-            {{> receivedKudos}}
-        </div>
-    </div>
-
 </template>
 
-<template name="receivedKudos">
-
-    <h4>Received, {{tot}} some:</h4>
-
+<template name="kudo_short_given_list">
     {{#each kudos}}
-        {{> kudo}}
+        {{> kudo_short}}
     {{else}}
-        None.
+    No kudos present
     {{/each}}
 </template>
 
-<template name="givenKudos">
-
-    <h4>Given, {{tot}} some:</h4>
-
+<template name="kudo_short_received_list">
     {{#each kudos}}
-        {{> kudo}}
+    {{> kudo_short}}
     {{else}}
-        None.
+    No kudos present
     {{/each}}
+</template>
+
+<template name="kudo_short">
+    <div class="row">
+        <div class="span10">
+            <strong>{{from}}</strong> <i class="icon-chevron-right"/> <strong>{{to}}</strong>,
+            {{reason}}.
+            <small><i>{{prettyWhen}}</i></small>
+        </div>
+        <div class="span2">
+            <ul class="inline">
+                <li><i class="icon-thumbs-up"/> 0</li>
+                <li><i class="icon-comment"/> 0</li>
+                <li><i class="icon-globe"/></li>
+            </ul>
+        </div>
+    </div>
 </template>

@@ -1,7 +1,79 @@
 <template name="admin">
-    <div class="container">
-        <a class='btn btn-primary' href="/balance">Balance</a>
-        <a class='drop btn btn-danger' href="#">Drop kudos :(</a>
-        
+    <div class="row">
+        <div class="span12">
+            <fieldset>
+                <legend>Administration of {{domain}} domain</legend>
+                {{> users_table}}
+                <a class='drop btn btn-danger' href="#">Drop kudos :(</a>
+                <a class='dropall btn btn-danger' href="#">Drop all kudos :'(</a>
+            </fieldset>
+        </div>
     </div>
+</template>
+
+<template name="users_table">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Sent / Received</th>
+            <th>Spendable</th>
+            <th>Currency</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each users}}
+        {{> user_detail}}
+        {{else}}
+        <tr>
+            <td colspan="6">No user in this domain.</td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+    <button class="resetUsers btn btn-info">Fix Counters</button>
+</template>
+
+<template name="user_detail">
+    {{#if editUser}}
+    <tr class="user" objId="{{_id}}">
+        <td><strong>{{profile.name}}</strong></td>
+        <td colspan="5">
+            <form id="editUser_form" class="form-inline">
+                <div class="row">
+<!--
+                    <div class="span4">
+                        <label class="control-label" for="kudos_per_week">Max kudos per week</label>
+                        <input type="text" id="kudos_per_week" placeholder="Kudos">
+                    </div>
+-->
+                    <div class="span4 pull-right">
+                        <button type="submit" class="reset btn btn-warning btn-small"><i class="icon-fire icon-white"/> Burn counters</button>
+                        {{#if enabled}}
+                            <button type="submit" class="disable btn btn-danger btn-small"><i class="icon-eye-close icon-white"/> Disable user</button>
+                        {{else}}
+                            <button type="submit" class="enable btn btn-success btn-small"><i class="icon-eye-open icon-white"/> Enable user</button>
+                        {{/if}}
+                    </div>
+                </div>
+            </form>
+        </td>
+    </tr>
+    {{else}}
+    <tr class="user" objId="{{_id}}">
+        {{#if enabled}}
+            <td><strong>{{profile.name}}</strong></td>
+            <td>{{profile.email}}</td>
+            <td>{{balance.sent}} / {{balance.received}}</td>
+            <td>{{balance.spendable}}</td>
+            <td>{{balance.currency}}</td>
+        {{else}}
+            <td><strong style="color: #ccc;">{{profile.name}}</strong></td>
+            <td colspan="4">This user is disabled</td>
+        {{/if}}
+        <td><a class="edit_user"><i class="icon-edit"/> Edit</a></td>
+    </tr>
+    {{/if}}
 </template>
