@@ -1,6 +1,9 @@
 {
   "packages": {
     "router": {},
-    "sugarjs": {}
+    "sugarjs": {},
+    "moment": {},
+    "cron": {},
+    "cron-tick": {}
   }
 }

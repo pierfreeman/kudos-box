@@ -1,11 +1,32 @@
 
 Meteor.methods({
 
+    triggerUserStatus: function (user_id, status) {
+        return Users.update({_id: user_id}, { $set : {'enabled': status }});
+    },
+
+    resetCounters: function (user_id) {
+        return Users.update({_id: user_id}, { $set : { 'balance.sent': 0, 'balance.received': 0}});
+    },
+
+    emitKudoError: function(message) {
+        Meteor.render("kudo_error");
+    },
+
     emitKudo: function (targetUser, reason) {
-        return emitKudo(Meteor.user(), targetUser, reason);
+        return emitKudo(Meteor.user(), targetUser, reason, new Date());
+    },
+
+    emitComment: function(kudo, message) {
+        return emitComment(kudo, Meteor.user(), message);
     },
 
     initializeUserBalance: function() {
+
+        // check user rights
+        if (!Meteor.user().profile.admin) {
+            throw new Meteor.Error(401, "You are not allowed to perform this operation")
+        }
 
         var users = Users.find({});
         users.forEach(function(user) {
@@ -38,21 +59,26 @@ Meteor.methods({
         likeKudo(Meteor.user()._id, kudoId);
     },
 
+    unlikeKudo: function(kudoId) {
+        unlikeKudo(Meteor.user()._id, kudoId);
+    },
+
     newUserByEmail: function(email) {
 
-        //var username = email.split('@')[0];
-        var username = email;
-
-        var profile = {
-            name: username,
-            email: email,
-            domain: getDomain(email),
-            sent: 0,
-            received: 0
-        };
-
         var user = new User({
-            profile: profile,
+            profile: {
+                name: email,
+                email: email,
+                domain: getDomain(email),
+                sent: 0,
+                received: 0
+            },
+            balance: {
+                received: 0,
+                sent: 0,
+                spendable: 100, //TODO change this number with 0 and implement a job that $inc them by policy
+                currency: 0
+            },
             createdAt: new Date().getTime()
         });
         user.info = {};
@@ -71,5 +97,20 @@ Meteor.methods({
     removeLastKudo: function() {
         var one = Kudos.findOne({}, {sort: {when: -1}});
         Kudos.remove(one._id);
+    },
+
+    // Moar temporary method
+    removeAllKudos: function() {
+        Kudos.remove({ _id: /^.*/ });
+    },
+
+    /*
+        Return a kudo and all connected information, knowing the "public id"
+     */
+    peekKudo: function(kudoId) {
+        check(kudoId, String);
+        var kudo = Kudos.findOne(kudoId);
+        kudo.from = Kudos.find
+        return kudo;
     }
 });

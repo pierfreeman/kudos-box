@@ -1,27 +1,45 @@
 
 // Private Methods
 
-emitKudo = function(fromUser, toUser, reason) {
+emitKudo = function(fromUser, toUser, reason, when) {
 
     var kudo = new Kudo({
         toId: toUser._id,
         fromId: fromUser._id,
         domain: fromUser.profile.domain,
-        reason: reason
+        reason: reason,
+        when: when
     });
 
     console.log("KUDO in {domain} from {from} to {to} because {reason} ".assign({
         from: fromUser.profile.name,
         to:   toUser.profile.name,
         domain: kudo.domain,
-        reason: kudo.reason
+        reason: kudo.reason,
+        when: kudo.when
     }));
 
-    Users.update(fromUser._id, {$inc: {'profile.sent': 1}});
-    Users.update(toUser._id, {$inc: {'profile.received': 1}});
+    Users.update(fromUser._id, {$inc: {'balance.sent': 1, 'balance.spendable': -1}});
+    Users.update(toUser._id, {$inc: {'balance.received': 1, 'balance.currency': 1}});
     kudo.save();
     return kudo;
-}
+};
+
+emitComment = function(kudo, author, message) {
+
+    var comment = {
+        author : author._id,
+        message : message,
+        when : new Date()
+    };
+
+    console.log("Kudo {kudo} commented by {author}".assign({
+        kudo: kudo._id,
+        author: author._id
+    }));
+
+    Kudos.update(kudo._id, {$push: {'comments' : comment}, $inc: {'commentsCount': 1}});
+};
 
 setupUserProfileByService = function (profile, user) {
 
@@ -33,11 +51,16 @@ setupUserProfileByService = function (profile, user) {
             profile.domain = getDomain(profile.email);
         }
     }
-}
+};
 
 likeKudo = function (userId, kudoId) {
 
     Kudos.update({_id:kudoId}, { $addToSet: { likes: userId } });
+};
+
+unlikeKudo = function (userId, kudoId) {
+
+    Kudos.update({_id:kudoId}, { $pull: { likes: userId } });
 };
 
 sendInvitationEmail = function(userId) {
@@ -53,7 +76,7 @@ sendInvitationEmail = function(userId) {
     };
 
     Email.send(options);
-}
+};
 
 reconnectAccounts = function(email) {
 
@@ -72,7 +95,5 @@ reconnectAccounts = function(email) {
         // delete old newUser
         Users.remove(oldUser._id);
         Users.update(newUser._id, newUser);
-
     }
-
-}
+};
