@@ -4,14 +4,34 @@ Template.admin.created = function() {
 
 Template.admin.events({
 
-    'click a.drop': function() {
-        Meteor.call('removeLastKudo');
-        return false;
+    'click button.less_days': function(e, t) {
+        e.preventDefault();
+        Meteor.call('decrementPeriod', getCurrentDomainByUser(Meteor.user()));
     },
 
-    'click a.dropall': function() {
-        Meteor.call('removeAllKudos');
-        return false;
+    'click button.more_days': function(e, t) {
+        e.preventDefault();
+        Meteor.call('incrementPeriod', getCurrentDomainByUser(Meteor.user()));
+    },
+
+    'click button.less_kudos': function(e, t) {
+        e.preventDefault();
+        Meteor.call('decrementAwarded', getCurrentDomainByUser(Meteor.user()));
+    },
+
+    'click button.more_kudos': function(e, t) {
+        e.preventDefault();
+        Meteor.call('incrementAwarded', getCurrentDomainByUser(Meteor.user()));
+    },
+
+    'click button.less_spendable': function(e, t) {
+        e.preventDefault();
+        Meteor.call('decrementDomainSpendable', getCurrentDomainByUser(Meteor.user()));
+    },
+
+    'click button.more_spendable': function(e, t) {
+        e.preventDefault();
+        Meteor.call('incrementDomainSpendable', getCurrentDomainByUser(Meteor.user()));
     }
 });
 
@@ -35,7 +55,7 @@ Template.admin.helpers({
     'domain': function() {
         var user = Meteor.user();
         if (!Meteor.loggingIn()) {
-            return user.profile.domain;
+            return Domains.findOne({name: user.profile.domain});
         }
         return false;
     }
@@ -45,14 +65,23 @@ Template.user_detail.helpers({
 
     editUser: function() {
         return Session.get('user.edit') == this._id;
+    },
+
+    notAdmin: function() {
+        return !this.profile.admin;
     }
 });
 
 Template.user_detail.events({
 
-    'click .edit_user': function(e, t) {
+    'click a.edit_user': function(e, t) {
         e.preventDefault();
         Session.set('user.edit', this._id);
+    },
+
+    'click a.exitEdit': function(e, t) {
+        e.preventDefault();
+        Session.set('user.edit', undefined);
     },
 
     'click button.reset': function(e, t) {
@@ -63,21 +92,33 @@ Template.user_detail.events({
         });
     },
 
-    'click button.disable': function(e, t) {
+    'click button.remove': function(e, t) {
         e.preventDefault();
-        Meteor.call("triggerUserStatus", this._id, false, function (error, result) {
+        Meteor.call("removeFromDomain", this._id, function (error, result) {
             console.log(result);
             Session.set('user.edit', undefined);
         });
     },
 
-    'click button.enable': function(e, t) {
+    'click button.give': function(e, t) {
         e.preventDefault();
-        Meteor.call("triggerUserStatus", this._id, true, function (error, result) {
+        Meteor.call("giveAdminRights", this._id, function (error, result) {
             console.log(result);
             Session.set('user.edit', undefined);
         });
+    },
+
+    'click button.more_kudo': function(e, t) {
+        e.preventDefault();
+        Meteor.call('incrementSpendable', this, function(e, r) {
+            console.log(e);
+        });
+    },
+
+    'click button.less_kudo': function(e, t) {
+        e.preventDefault();
+        Meteor.call('decrementSpendable', this, function(e, r) {
+            console.log(e);
+        });
     }
 });
-
-

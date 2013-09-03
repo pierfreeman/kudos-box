@@ -1,9 +1,8 @@
 {
-  "packages": {
-    "router": {},
-    "sugarjs": {},
-    "moment": {},
-    "cron": {},
-    "cron-tick": {}
-  }
+    "packages": {
+        "router": {},
+        "moment": {},
+        "cron": {},
+        "cron-tick": {}
+    }
 }

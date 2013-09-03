@@ -10,3 +10,7 @@ a {
 .prettyTime {
     font-size: small; font-style: italic;
 }
+
+.input-xmini {
+    width: 30px;
+}

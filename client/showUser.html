@@ -10,13 +10,7 @@
                 <ul class="inline">
                     <li><i class="icon-envelope"/> Email: {{user.profile.email}}</li>
                     <li><i class="icon-map-marker"/> Domain: {{user.profile.domain}}</li>
-                    <li>
-                        {{#if user.enabled}}
-                        <i class="icon-eye-open"/> Status: enabled
-                        {{else}}
-                        <i class="icon-eye-close"/> Status: disabled <i>(you cannot send or receive kudos)</i>
-                        {{/if}}
-                    </li>
+                    <li><a class="leave_domain"><i class="icon-remove"/> <small><i>Leave domain</i></small></a></li>
                 </ul>
                 <ul class="inline">
                     <li>
@@ -68,7 +62,7 @@
 
 <template name="kudo_short_given_list">
     {{#each kudos}}
-        {{> kudo_short}}
+        {{> kudo_short_given}}
     {{else}}
     No kudos present
     {{/each}}
@@ -76,25 +70,40 @@
 
 <template name="kudo_short_received_list">
     {{#each kudos}}
-    {{> kudo_short}}
+        {{> kudo_short_received}}
     {{else}}
     No kudos present
     {{/each}}
 </template>
 
-<template name="kudo_short">
+<template name="kudo_short_given">
     <div class="row">
         <div class="span10">
-            <strong>{{from}}</strong> <i class="icon-chevron-right"/> <strong>{{to}}</strong>,
+            <i class="icon-chevron-right"/> <strong>{{to}}</strong>,
             {{reason}}.
             <small><i>{{prettyWhen}}</i></small>
         </div>
-        <div class="span2">
-            <ul class="inline">
-                <li><i class="icon-thumbs-up"/> 0</li>
-                <li><i class="icon-comment"/> 0</li>
-                <li><i class="icon-globe"/></li>
-            </ul>
+        {{> kudo_short_details}}
+    </div>
+</template>
+
+<template name="kudo_short_received">
+    <div class="row">
+        <div class="span10">
+            <i class="icon-chevron-left"/> <strong>{{from}}</strong>,
+            {{reason}}.
+            <small><i>{{prettyWhen}}</i></small>
         </div>
+        {{> kudo_short_details}}
+    </div>
+</template>
+
+<template name="kudo_short_details">
+    <div class="span2">
+        <ul class="inline">
+            <li><i class="icon-thumbs-up"/> {{likes}}</li>
+            <li><i class="icon-comment"/> {{comments}}</li>
+            <li><a class="public-link"><i class="icon-globe"/></a></li>
+        </ul>
     </div>
 </template>

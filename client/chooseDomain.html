@@ -1,0 +1,84 @@
+<template name="chooseDomain">
+
+    <div class="row">
+        <div class="span12">
+            <form>
+                <fieldset>
+                    <legend>Create domain</legend>
+                    <div class="input-append">
+                        <input type="text" class="input" name="newDomain" placeholder='The name of your domain?' autocomplete="off">
+                        <input class="input" type="number" name="initKudo"placeholder="How many initial kudos?" value="{{domain.rules.maxSpendableKudosAllowed}}">
+                        <button type="submit" class="create btn btn-primary">Create</button>
+                    </div>
+                    <legend>Choose domain</legend>
+                    {{#if defaultDomainNotExists}}
+                    <div class="row" objName="{{defaultDomainName}}">
+                        <div class="span4">
+                            <label class="radio">
+                                <input type="radio" name="domainOptions" value="{{defaultDomainName}}" checked>
+                                <strong>{{defaultDomainName}}</strong>, default domain by your email
+                            </label>
+                        </div>
+                        <div class="span4">
+                            <ul class="unstyled">
+                                <li>
+                                    {{#if exists}}
+                                    <i class="icon-ok"/> This domain already exists
+                                    {{else}}
+                                    <i class="icon-remove"/> This domain does not exists yet
+                                    {{/if}}
+                                </li>
+                                <li>
+                                    {{#if yourRole}}
+                                    <i class='icon-ok'/> You will be the admin of the domain
+                                    {{else}}
+                                    <i class='icon-remove'/> You will be a regular user
+                                    {{/if}}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{#each domains}}
+                        {{> groupDomain}}
+                    {{/each}}
+                    
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="subscribe btn btn-primary"><i class="icon-plus icon-white"/> Subscribe!</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</template>
+
+<template name="groupDomain">
+    <div class="row" objId="{{_id}}">
+        <div class="span4">
+            <label class="radio">
+                <input type="radio" name="domainOptions" id="{{_id}}" value="{{name}}">
+                <strong>{{name}}</strong>, a {{isPublic}} domain with {{members}} members
+            </label>
+        </div>
+        <div class="span4">
+            <ul class="unstyled">
+                <li>
+                    {{baluba}}
+                    {{#if exists}}
+                    <i class="icon-ok"/> This domain already exists
+                    {{else}}
+                    <i class="icon-remove"/> This domain does not exists yet
+                    {{/if}}
+                </li>
+                <li>
+                    {{#if yourRole}}
+                    <i class='icon-ok'/> You will be the admin of the domain
+                    {{else}}
+                    <i class='icon-remove'/> You will be a regular user
+                    {{/if}}
+                </li>
+            </ul>
+        </div>
+    </div>
+</template>

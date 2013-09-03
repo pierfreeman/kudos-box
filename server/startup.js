@@ -1,15 +1,30 @@
 Meteor.startup(function () {
 
-    var user = function ( _id, name) {
+    var domain = function(name) {
 
-        return findOrCreate(new User(
+        return findOrCreateDomain(new GroupDomain(
+            {
+                'admin': null,
+                'name': name,
+                'public': true,
+                'rules': {
+                    'period': 7,
+                    'kudosForPeriod': 3,
+                    'maxSpendableKudosAllowed': 100
+                }
+            }
+        ));
+    };
+
+    var user = function(_id, name, domain) {
+
+        return findOrCreateUser(new User(
             {
                 _id: _id,
-                enabled: true,
                 profile: {
                     name: name,
                     email: _id.replace(/_/g, '') + "@byte-code.com",
-                    domain: 'byte-code.com',
+                    domain: domain.name,
                     picture: "/generic_avatar.gif"
                 },
                 balance: {
@@ -22,12 +37,12 @@ Meteor.startup(function () {
         ));
     };
 
-    var u1 = user('_stark', 'Tony Stark');
-    var u2 = user('_rogers', 'Steve Rogers');
-    var u3 = user('_banner', 'Bruce Banner');
-    var u4 = user('_nathy', 'Natasha Romanoff');
-    var u5 = user('_barton', 'Clint Barton');
-    var u6 = user('_thor', 'Thor TheGreat');
+    var u2 = user('_rogers', 'Steve Rogers', domain('byte-code'));
+    var u4 = user('_nathy', 'Natasha Romanoff', domain('byte-code'));
+    var u1 = user('_stark', 'Tony Stark', domain('byte-code'));
+    var u3 = user('_banner', 'Bruce Banner', domain('byte-code'));
+    var u5 = user('_barton', 'Clint Barton', domain('byte-code'));
+    var u6 = user('_thor', 'Thor TheGreat', domain('byte-code'));
 
     if (Kudos.find().count() === 0) {
 
@@ -45,15 +60,24 @@ Meteor.startup(function () {
     }
 });
 
-function findOrCreate(test) {
+function findOrCreateUser(test) {
 
     var user = Users.findOne({_id: test._id});
-
     if(!user) {
         Users.insert(test);
         user = test;
     }
     return user;
+}
+
+function findOrCreateDomain(test) {
+
+    var domain = Domains.findOne({name: test.name});
+    if (!domain) {
+        Domains.insert(test);
+        domain = test;
+    }
+    return domain;
 }
 
 
