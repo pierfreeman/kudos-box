@@ -30,7 +30,7 @@ Accounts.onCreateUser(function(options, user) {
 
     // no callback after user creation
     Meteor.setTimeout(function() {
-        console.log('reconnect {1}'.assign(user.profile.email));
+        console.log('reconnect ' + user.profile.email);
         reconnectAccounts(user.profile.email);
     }, 3000);
 

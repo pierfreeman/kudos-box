@@ -1,6 +1,6 @@
 
 Meteor.Router.beforeRouting = function() {
-    // anything you like before routing
+    alertList.remove({});
 };
 
 Meteor.Router.add({
@@ -11,6 +11,8 @@ Meteor.Router.add({
     '/home': 'home',
 
     '/about': 'about',
+
+    '/domain': 'chooseDomain',
 
     '/share/:id' : function(id) {
 
@@ -44,10 +46,16 @@ Meteor.Router.add({
 Meteor.Router.filters({
 
     'checkLoggedIn': function(page) {
+
         if (Meteor.loggingIn()) {
             return 'loading';
         } else if (Meteor.user()) {
             if (!Meteor.loggingIn()) {
+                var user = Meteor.user();
+                if (!user.profile.domain) {
+                    Session.set('userWithoutDomain', user._id);
+                    return 'chooseDomain';
+                }
                 return page;
             } else {
                 return 'loading';
@@ -61,7 +69,7 @@ Meteor.Router.filters({
         if (Meteor.userId() && Meteor.user().profile.admin) {
             return page;
         } else {
-            throw new Meteor.Error(401, 'This page requires administration rights');
+            return 'timeline';
         }
     }    
 });

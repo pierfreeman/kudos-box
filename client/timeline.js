@@ -1,4 +1,6 @@
 var PAGE_SIZE = 10;
+alertList = new Meteor.Collection();
+//Meteor.call('updateBalance', Users.findOne({"_id": Meteor.userId()}).profile.domain);
 
 Template.kudo_form.rendered = function() {
     return $('input[name=to]').typeahead({
@@ -27,7 +29,7 @@ Template.kudo_list.created = function() {
             Session.set('current_page', currentpage + 1);
         }
     });
-
+    
     Session.setDefault('kudo.showComments', {});
 };
 
@@ -70,27 +72,29 @@ Template.kudo_form.events({
         var inputReason = tmpl.find('[name=reason]');
         var to = inputTo.value;
         var reason = inputReason.value;
+        
 
         if ( to != '' && reason != '' ) {
 
             var currentUser = Meteor.user();
             var targetUser = Users.findOne({'profile.name': to});
+                   
 
             if (targetUser == null) {
                 // test if it's a valid domain
                 if (to.indexOf( currentUser.profile.domain ) && isEmail(to)) {
                     Meteor.call('newUserByEmail', to);
                 } else {
-                    alert("I can't find this guy!");
+                    createAlert("error", "I can't find this guy!", false);
                 }
                 return false;
             }
-
+                
             if (targetUser._id === currentUser._id) {
-                alert("Make love with somebody else, please!");
+                createAlert("error", "Make love with somebody else, please!", false);
                 return false;
             }
-
+            
             inputTo.value = '';
             inputReason.value = '';
 
@@ -100,7 +104,7 @@ Template.kudo_form.events({
             });
 
         } else {
-            alert('Are u making fun of me?');
+            createAlert("error", "Are u making fun of me?", false);
         }
         return false;
     }
@@ -124,7 +128,7 @@ Template.kudo.events({
 
         var showComments = Session.get('kudo.showComments');
         if (_.has(showComments, this._id)) {
-            Session.set('kudo.showComments', _.omit(showComments, this._id))
+            Session.set('kudo.showComments', _.omit(showComments, this._id));
         } else {
             showComments[this._id] = true;
             Session.set('kudo.showComments', showComments);
@@ -172,6 +176,31 @@ Template.kudo.helpers({
     },
     showComments: function()  {
         return Session.get('kudo.showComments')[this._id];
+    }
+});
+
+Template.kudo_form.helpers({
+
+    userHasKudos: function() {
+        if (Meteor.user()) {
+            if (!Meteor.loggingIn()) {
+                if (Meteor.user().balance) {
+                    return Meteor.user().balance.spendable > 0;
+                }
+            }
+        }
+        return false;
+    },
+
+    remainingKudos: function() {
+        if (Meteor.user()) {
+            if (!Meteor.loggingIn()) {
+                if (Meteor.user().balance) {
+                    return Meteor.user().balance.spendable;
+                }
+            }
+        }
+        return 0;
     }
 });
 

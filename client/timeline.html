@@ -4,14 +4,35 @@
 </template>
 
 <template name="kudo_form">
-    <form id="kudo_form" class="form-inline">
-        <fieldset>
-            <legend>Insert Kudo</legend>
-            <input type="text" class="input-medium" placeholder="Who?" name="to" autocomplete="off">
-            <input type="text" class="input-xlarge" placeholder="Why?" name="reason" autocomplete="off">
-            <button class="btn btn-primary"> <span class="icon-gift icon-white"/> Submit</button>
-        </fieldset>
-    </form>
+    <div class="row">
+        <div class="span12">
+            <form id="kudo_form" class="form-inline">
+                <fieldset>
+                    <legend>Insert Kudo</legend>
+                    <div class="row">
+                        <div class="span11 offset1">
+                            {{#if userHasKudos}}
+                            <input type="text" class="input-medium" placeholder="Who?" name="to" autocomplete="off">
+                            <div class="input-append">
+                                <input type="text" class="input-xxlarge" placeholder="Why?" name="reason" autocomplete="off">
+                                <div class="btn-group">
+                                    <button class="btn btn-primary"> <span class="icon-gift icon-white"/> Send</button>
+                                </div>
+                            </div>
+                            {{else}}
+                            <p>You have finished spendable kudos. You cannot send kudos until they resets</p>
+                            {{/if}}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="span11 offset1">
+                            <p><small><i>You can post {{remainingKudos}} more kudos.</i></small></p>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
 </template>
 
 <template name="kudo_list">
@@ -97,3 +118,5 @@
         </div>
     </div>
 </template>
+
+

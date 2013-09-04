@@ -22,7 +22,8 @@ Template.navbarMenu.items = function() {
     var here = Meteor.Router.page();
 
     var map = function(item) {
-        var n = Object.clone(item, true);
+
+        var n = _.clone(item);
         if (here == item.page) {
             n.clazz = 'active';
         } else {
@@ -48,7 +49,7 @@ Navbar = [
         href: function() {
             var name = Meteor.user();
             if (!Meteor.loggingIn()) {
-                return '/users/{name}'.assign({name: name.profile.name});
+                return '/users/' + name.profile.name;
             }
             return false;
         },
